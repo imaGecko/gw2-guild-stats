@@ -11,12 +11,12 @@ def gen_tables() -> None:
         tables[guild] = pd.DataFrame.from_records(raw_data[guild])
         print(tables[guild])
 
-    combined_table = tables['cruel'].merge(right=tables['chaotic'], how='outer', on='name')
+    combined_table = tables['cruel'].merge(right=tables['chaotic'], how='outer', on=["name"], suffixes=("_cruel", "_chaotic"))
     print(combined_table.info())
-    filter = combined_table['rank_x'].notnull()&combined_table['rank_y'].notnull() 
+    filter = combined_table['rank_chaotic'].notnull()&combined_table['rank_cruel'].notnull() 
     both_guilds = combined_table.where(filter).dropna()
     print(both_guilds.info())
-    different_ranks = both_guilds.where(both_guilds['rank_x']!=both_guilds['rank_y']).dropna()
+    different_ranks = both_guilds.where(both_guilds['rank_cruel']!=both_guilds['rank_chaotic']).dropna()
     print(different_ranks)
 
     table_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), f"tables/{data_loader.today}")
